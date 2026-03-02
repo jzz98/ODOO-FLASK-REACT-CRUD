@@ -74,3 +74,41 @@ export async function GetUsers() {
 
     return data;
 }
+
+export async function UpdateUser(id: number, name: string, email: string, password: string) {
+    try {
+        const payload = {
+            username: name,
+            email: email,
+            password: password
+        }
+
+        const response = await fetch(`http://localhost:5000/api/update-users/${id}`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+        return data
+    } catch (err: any) {
+        console.log(err)
+        throw Error(err)
+    }
+}
+
+export async function DeleteUser(id: number) {
+    try {
+        const response = await fetch(`http://localhost:5000/api/delete-users/${id}`, {
+            method: "DELETE"
+        })
+
+        const data = await response.json()
+        return data
+    } catch (err: any) {
+        console.log(err)
+        throw Error(err)
+    }
+}

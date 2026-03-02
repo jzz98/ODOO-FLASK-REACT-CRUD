@@ -4,6 +4,7 @@ import { CrudForm } from '../components/CrudForm'
 import { CrudTable } from '../components/CrudTable'
 import { Stats } from '../components/Stats'
 import type { User, UserFormState } from '../types/user'
+import { DeleteUser, UpdateUser } from '../api/UsersApi'
 
 const emptyForm: UserFormState = {
   name: '',
@@ -39,25 +40,42 @@ export function Dashboard() {
 
   const handleEdit = (user: User) => {
     setEditingId(user.id)
-      setForm({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        status: user.status,
-        password: '',
-      })
+    setForm({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      password: '',
+    })
   }
 
-  const handleDelete = (id: number) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id))
-    if (editingId === id) resetForm()
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await DeleteUser(id)
+      if (!response || response.status !== 201) return
+      setUsers((prev) => prev.filter((u) => u.id !== id))
+      if (editingId === id) resetForm()
+    } catch (error) {
+      console.error('Error eliminando usuario', error)
+    }
   }
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!form.name.trim() || !form.email.trim()) return
     if (editingId) {
-      setUsers((prev) => prev.map((u) => (u.id === editingId ? { ...u, ...form } : u)))
+      UpdateUser(editingId, form.name, form.email, form.password)
+        .then((response) => {
+          if (!response || response.status !== 201) return
+          setUsers((prev) =>
+            prev.map((u) => (u.id === editingId ? { ...u, ...form } : u)),
+          )
+          resetForm()
+        })
+        .catch((error) => {
+          console.error('Error actualizando usuario', error)
+        })
+      return
     } else {
       if (!form.password.trim()) return
       AuthRegister({ username: form.name, email: form.email, password: form.password })

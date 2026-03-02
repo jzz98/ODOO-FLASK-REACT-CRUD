@@ -493,6 +493,21 @@
   gap: 0.5rem;
 }
 
+.image-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.image-preview img {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #fff;
+}
+
 .primary {
   background: #0f172a;
   color: #f8fafc;

@@ -21,15 +21,31 @@ function ProtectedRoute({ isAuthenticated, children }: ProtectedRouteProps) {
 
 function App() {
   const navigate = useNavigate()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      return localStorage.getItem('isAuthenticated') === 'true'
+    } catch {
+      return false
+    }
+  })
 
   const setAuth = () => {
     setIsAuthenticated(true)
+    try {
+      localStorage.setItem('isAuthenticated', 'true')
+    } catch {
+      // ignore storage errors
+    }
     navigate('/dashboard')
   }
 
   const handleLogout = () => {
     setIsAuthenticated(false)
+    try {
+      localStorage.removeItem('isAuthenticated')
+    } catch {
+      // ignore storage errors
+    }
     navigate('/login')
   }
 
